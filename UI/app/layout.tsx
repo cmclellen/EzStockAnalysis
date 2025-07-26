@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import Header from "./_components/Header";
 import "./globals.css";
+import Footer from "./_components/Footer";
 
 const montserrat = Montserrat({});
 
@@ -17,9 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserrat.className} antialiased h-screen`}>
+      <body
+        className={`${montserrat.className} antialiased h-screen flex flex-col`}
+      >
         <Header />
-        {children}
+        <main className="grow container mx-auto py-5">{children}</main>
+        <Footer />
       </body>
     </html>
   );
