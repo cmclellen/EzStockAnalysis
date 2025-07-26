@@ -26,7 +26,7 @@ async function Header() {
             <Image src="logo.svg" alt={appName} fill className="object-cover" />
           </div>
 
-          <h1 className="font-font md:text-lg text-md">{appName}</h1>
+          <h1 className="font-bold italic md:text-lg text-md">{appName}</h1>
         </div>
 
         <div className="hidden md:block">

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import { OAuthUserConfig } from "next-auth/providers";
 import Google, { GoogleProfile } from "next-auth/providers/google";
+import { createGuest, getGuest } from "./data-service";
 
 const googleParams: OAuthUserConfig<GoogleProfile> = {
   clientId: process.env.AUTH_GOOGLE_ID,
@@ -18,11 +19,23 @@ export const {
     authorized({ auth, _request }: any) {
       return !!auth?.user;
     },
-    async signIn({ _user, account, profile }: any) {
-      if (account.provider === "google") {
-        return profile.email_verified && profile.email.endsWith("@gmail.com");
+    async signIn({ user, _account, _profile }: any) {
+      try {
+        const existingGuest = await getGuest(user.email);
+        console.log("here1", existingGuest);
+        if (!existingGuest) {
+          await createGuest({ email: user.email, fullName: user.name });
+        }
+        return true;
+      } catch {
+        return false;
       }
-      return true; // Do different verification for other providers that don't have `email_verified`
+    },
+    async session({ session, _user }: any) {
+      const guest = await getGuest(session.user.email);
+      console.log("here2", guest);
+      session.user.userId = guest.id;
+      return session;
     },
   },
   pages: {
