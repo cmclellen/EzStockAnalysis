@@ -62,7 +62,7 @@ type StockChartProps = {
 
 function StockChart(_props: StockChartProps) {
   return (
-    <ResponsiveContainer width="100%" height="100%" className="" aspect={1.5}>
+    <ResponsiveContainer width="100%" height="100%" className="" aspect={2}>
       <LineChart
         width={500}
         height={300}

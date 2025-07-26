@@ -14,12 +14,18 @@ export const {
   auth,
 } = NextAuth({
   providers: [Google(googleParams)],
-  // callbacks: {
-  //   async signIn({ account, profile }) {
-  //     if (account.provider === "google") {
-  //       return profile.email_verified && profile.email.endsWith("@example.com");
-  //     }
-  //     return true; // Do different verification for other providers that don't have `email_verified`
-  //   },
-  // },
+  callbacks: {
+    authorized({ auth, _request }: any) {
+      return !!auth?.user;
+    },
+    async signIn({ _user, account, profile }: any) {
+      if (account.provider === "google") {
+        return profile.email_verified && profile.email.endsWith("@gmail.com");
+      }
+      return true; // Do different verification for other providers that don't have `email_verified`
+    },
+  },
+  pages: {
+    signIn: "/login",
+  },
 });

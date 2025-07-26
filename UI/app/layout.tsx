@@ -22,7 +22,9 @@ export default function RootLayout({
         className={`${montserrat.className} antialiased h-screen flex flex-col`}
       >
         <Header />
-        <main className="grow container mx-auto py-5">{children}</main>
+        <main className="grow overflow-y-scroll">
+          <div className="container mx-auto p-15">{children}</div>
+        </main>
         <Footer />
       </body>
     </html>

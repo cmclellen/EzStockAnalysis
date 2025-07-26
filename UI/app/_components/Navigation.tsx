@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { HiBars3 } from "react-icons/hi2";
 import { UserProfileInfo } from "../_lib/types";
+import { signOutAction } from "../_lib/actions";
 
 type NavigationProps = {
   //children: React.ReactNode;
@@ -33,12 +34,12 @@ function Navigation({ userProfile }: NavigationProps) {
       >
         {userProfile && (
           <>
-            <li className="">
-              <div className="flex items-center justify-center space-x-1">
-                <div className="relative size-8 rounded-full border-2 border-on-primary-container/50">
+            <li>
+              <div className="flex items-center justify-center space-x-2">
+                <div className="relative size-8 rounded-full outline-2 outline-on-primary-container/50 outline-offset-2">
                   <Image
                     src={userProfile!.imageUrl!}
-                    alt=""
+                    alt={userProfile!.username!}
                     fill
                     sizes="100%"
                     className="object-cover rounded-full aspect-square"
@@ -47,16 +48,21 @@ function Navigation({ userProfile }: NavigationProps) {
                 <span>{userProfile!.username}</span>
               </div>
             </li>
+            <li>
+              <form action={signOutAction} className="h-full">
+                <button className="cursor-pointer h-full">Log Out</button>
+              </form>
+            </li>
           </>
         )}
         {!userProfile && (
           <>
-            <li className="">
-              <a href="#" className="nav-secure">
-                Login
+            <li>
+              <a href="/login" className="nav-secure">
+                Log In
               </a>
             </li>
-            <li className="">
+            <li>
               <a href="#" className="nav-secure">
                 Sign Up
               </a>
