@@ -15,8 +15,6 @@ async function page(_props: pageProps) {
 
   const guest = await getGuest(session!.user!.email!);
 
-  console.log("guest", guest);
-
   const { fullName, email, nationality, countryFlag } = guest;
 
   return (
