@@ -24,8 +24,8 @@ export default function RootLayout({
         className={`${montserrat.className} antialiased h-screen flex flex-col`}
       >
         <Header />
-        <main className="grow overflow-y-scroll">
-          <div className="container mx-auto p-15">{children}</div>
+        <main className="grow overflow-y-auto text-on-surface bg-surface">
+          <div className="container mx-auto p-3">{children}</div>
         </main>
         <Footer />
       </body>

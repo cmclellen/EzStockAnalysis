@@ -1,11 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import Image from "next/image";
 import { useRef, useState } from "react";
-import { HiBars3 } from "react-icons/hi2";
-import { UserProfileInfo } from "../_lib/types";
+import { HiBars3, HiXMark } from "react-icons/hi2";
 import { signOutAction } from "../_lib/actions";
+import { UserProfileInfo } from "../_lib/types";
 import NavigationUserProfile from "./NavigationUserProfile";
 
 type NavigationProps = {
@@ -19,10 +18,13 @@ function Navigation({ userProfile }: NavigationProps) {
 
   return (
     <>
-      <HiBars3
+      <button
         className="sm:hidden"
         onClick={() => setShowMenu((v: boolean) => !v)}
-      />
+      >
+        {!showMenu && <HiBars3 />}
+        {showMenu && <HiXMark />}
+      </button>
 
       <ul
         ref={ref}
@@ -40,7 +42,9 @@ function Navigation({ userProfile }: NavigationProps) {
             </li>
             <li>
               <form action={signOutAction} className="h-full">
-                <button className="cursor-pointer h-full">Log Out</button>
+                <button className="cursor-pointer h-full w-full">
+                  Log Out
+                </button>
               </form>
             </li>
           </>

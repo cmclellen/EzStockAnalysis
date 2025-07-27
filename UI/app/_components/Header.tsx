@@ -4,6 +4,7 @@ import SearchStockInput from "./SearchStockInput";
 import { auth } from "../_lib/auth";
 import { UserProfileInfo } from "../_lib/types";
 import { Session } from "next-auth";
+import Link from "next/link";
 
 async function Header() {
   const session: Session | null = await auth();
@@ -21,13 +22,15 @@ async function Header() {
   return (
     <div className="bg-primary-container text-on-primary-container shadow">
       <div className="flex items-center justify-between container mx-auto p-2 relative">
-        <div className="flex items-center space-x-1">
+        <Link href="/" className="flex items-center space-x-1">
           <div className="relative size-8">
             <Image src="logo.svg" alt={appName} fill className="object-cover" />
           </div>
 
-          <h1 className="font-bold italic md:text-lg text-md">{appName}</h1>
-        </div>
+          <h1 className="font-bold italic text-sm lg:text-lg text-md">
+            {appName}
+          </h1>
+        </Link>
 
         <div className="hidden md:block">
           <SearchStockInput />

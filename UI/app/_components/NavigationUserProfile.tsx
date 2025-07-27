@@ -9,7 +9,7 @@ type NavigationUserProfileProps = {
 function NavigationUserProfile({ userProfile }: NavigationUserProfileProps) {
   return (
     <div className="relative group">
-      <div className="flex items-center justify-center space-x-2 cursor-pointer">
+      <div className="hidden sm:flex items-center justify-center space-x-2 cursor-pointer">
         <div className="relative size-8 rounded-full outline-2 outline-on-primary-container/50 outline-offset-2">
           <Image
             src={userProfile!.imageUrl!}
@@ -25,16 +25,11 @@ function NavigationUserProfile({ userProfile }: NavigationUserProfileProps) {
           <FaChevronUp className="absolute top-1 left-0 opacity-0 group-hover:opacity-100 duration-300 ease-linear" />
         </div>
       </div>
-      <div className="absolute top-8 left-0 hidden group-hover:block w-full duration-300">
-        <ul className="w-full shadow-xl rounded-b-xl mt-2 py-2 bg-primary-container">
+      <div className="sm:absolute sm:top-8 sm:left-0 sm:hidden sm:group-hover:block w-full duration-300">
+        <ul className="w-full sm:shadow-xl rounded-b-xl sm:mt-2 sm:py-2 bg-primary-container">
           <li className="">
-            <a href="#" className="px-2 py-2 block text-center">
+            <a href="/profile" className="px-2 py-2 block text-center">
               Profile
-            </a>
-          </li>
-          <li>
-            <a href="/dashboard" className="px-2 py-2 block  text-center">
-              Other
             </a>
           </li>
         </ul>

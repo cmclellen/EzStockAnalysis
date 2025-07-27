@@ -6,7 +6,7 @@ type SearchStockInputProps = {
 
 function SearchStockInput(_props: SearchStockInputProps) {
   return (
-    <div className="flex items-center space-x-1 border rounded-full px-2 py-1 border-on-primary-surface w-xs">
+    <div className="flex items-center space-x-1 border rounded-full px-2 py-1 border-on-primary-surface w-xs max-w-60">
       <IoIosSearch />
       <input
         className="text-xs outline-none w-full"
