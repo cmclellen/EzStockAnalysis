@@ -1,3 +1,4 @@
+import PageHeader from "../_components/PageHeader";
 import { auth } from "../_lib/auth";
 import { getGuest, Guest } from "../_lib/data-service";
 import Form from "next/form";
@@ -15,7 +16,7 @@ async function page(_props: pageProps) {
 
   return (
     <div>
-      <h2 className="font-semibold text-3xl">Update your profile</h2>
+      <PageHeader>Update your profile</PageHeader>
 
       <Form action="" className="form space-y-2 py-3">
         <div className="form-field">
