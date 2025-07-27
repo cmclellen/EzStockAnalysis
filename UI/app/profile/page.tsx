@@ -60,7 +60,7 @@ async function page(_props: pageProps) {
             defaultCountry={nationality}
             className="form-field-value"
           />
-          <div className="w-1/12 h-6">
+          <div className="hidden md:block w-1/12 h-6">
             <div className="h-full relative drop-shadow-lg">
               <Image
                 src={countryFlag}
