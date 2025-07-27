@@ -66,7 +66,7 @@ async function page(_props: pageProps) {
                 src={countryFlag}
                 alt="Country flag"
                 fill
-                className="object-fit"
+                className="object-contain object-left px-2"
               />
             </div>
           </div>
