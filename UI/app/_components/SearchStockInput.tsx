@@ -31,7 +31,7 @@ function SearchStockInput(_props: SearchStockInputProps) {
 
   return (
 
-    <div className={clsx("flex items-center space-x-1 border px-2 py-1 border-on-primary-surface w-xs max-w-60 relative", {
+    <div className={clsx("flex items-center space-x-1 border border-on-surface/50 px-2 py-1 bg-surface w-xs max-w-60 relative", {
       "rounded-full": !isExpanded,
       "rounded-t-xl": isExpanded,
     })}>
