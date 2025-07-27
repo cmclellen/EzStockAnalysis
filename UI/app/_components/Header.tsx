@@ -20,7 +20,7 @@ async function Header() {
 
   const appName = process.env.NEXT_PUBLIC_APP_NAME!;
   return (
-    <div className="bg-primary-container text-on-primary-container shadow">
+    <div className="bg-primary-container text-on-primary-container shadow-lg z-10">
       <div className="flex items-center justify-between container mx-auto p-2 relative">
         <Link href="/" className="flex items-center space-x-1">
           <div className="relative size-8">

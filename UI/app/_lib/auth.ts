@@ -22,7 +22,6 @@ export const {
     async signIn({ user, _account, _profile }: any) {
       try {
         const existingGuest = await getGuest(user.email);
-        console.log("here1", existingGuest);
         if (!existingGuest) {
           await createGuest({ email: user.email, fullName: user.name });
         }
@@ -33,8 +32,7 @@ export const {
     },
     async session({ session, _user }: any) {
       const guest = await getGuest(session.user.email);
-      console.log("here2", guest);
-      session.user.userId = guest.id;
+      session.user.guestId = guest.id;
       return session;
     },
   },

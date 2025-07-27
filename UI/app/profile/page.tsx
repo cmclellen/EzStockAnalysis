@@ -1,7 +1,10 @@
-import PageHeader from "../_components/PageHeader";
-import { auth } from "../_lib/auth";
-import { getGuest, Guest } from "../_lib/data-service";
 import Form from "next/form";
+import PageHeader from "../_components/PageHeader";
+import SelectCountry from "../_components/SelectCountry";
+import { auth } from "../_lib/auth";
+import { getGuest } from "../_lib/data-service";
+import { updateGuest } from "../_lib/actions";
+import Image from "next/image";
 
 type pageProps = {
   // guest: Guest;
@@ -12,13 +15,15 @@ async function page(_props: pageProps) {
 
   const guest = await getGuest(session!.user!.email!);
 
-  const { fullName, email } = guest;
+  console.log("guest", guest);
+
+  const { fullName, email, nationality, countryFlag } = guest;
 
   return (
     <div>
       <PageHeader>Update your profile</PageHeader>
 
-      <Form action="" className="form space-y-2 py-3">
+      <Form action={updateGuest} className="form space-y-2 py-3">
         <div className="form-field">
           <label htmlFor="fullName" className="form-field-label">
             Full name
@@ -46,14 +51,25 @@ async function page(_props: pageProps) {
         </div>
 
         <div className="form-field">
-          <label htmlFor="whereYouFrom" className="form-field-label">
+          <label htmlFor="nationality" className="form-field-label">
             Where are you from?
           </label>
-          <input
-            name="whereYouFrom"
-            defaultValue={email}
+          <SelectCountry
+            name="nationality"
+            id="nationality"
+            defaultCountry={nationality}
             className="form-field-value"
           />
+          <div className="w-1/12 h-6">
+            <div className="h-full relative drop-shadow-lg">
+              <Image
+                src={countryFlag}
+                alt="Country flag"
+                fill
+                className="object-fit"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="w-full flex items-center mt-3">
