@@ -6,10 +6,10 @@ type CountryInfo = {
 };
 
 type SelectCountryProps = {
-  defaultCountry: string;
-  name: string;
-  id: string;
-  className: string;
+  readonly defaultCountry: string;
+  readonly name: string;
+  readonly id: string;
+  readonly className: string;
 };
 
 function formatOptionValue(c: CountryInfo | null) {
