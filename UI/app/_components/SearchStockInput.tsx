@@ -1,8 +1,9 @@
 'use client';
 
 import clsx from "clsx";
-import { useState } from "react";
+import { RefObject, useRef, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
+import { useClickOutside } from "../_hooks/useClickOutside";
 
 const stocks = [{
   ticker: 'NVDA',
@@ -26,12 +27,13 @@ type SearchStockInputProps = {
 };
 
 function SearchStockInput(_props: SearchStockInputProps) {
-
+  const wrapperRef: RefObject<HTMLDivElement | null> = useRef(null);
+  useClickOutside(wrapperRef, () => setIsExpanded(false));
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
 
-    <div className="relative">
+    <div ref={wrapperRef} className="relative">
       <div className={clsx("flex items-center space-x-1 border px-2 py-1 border-on-surface/50 w-xs max-w-60 bg-surface", {
         "rounded-full": !isExpanded,
         "rounded-t-xl": isExpanded,
