@@ -31,20 +31,22 @@ function SearchStockInput(_props: SearchStockInputProps) {
 
   return (
 
-    <div className={clsx("flex items-center space-x-1 border px-2 py-1 border-on-primary-surface w-xs max-w-60 relative", {
-      "rounded-full": !isExpanded,
-      "rounded-t-xl": isExpanded,
-    })}>
-      <IoIosSearch />
-      <input onClick={e => setIsExpanded(v => !v)}
-        className="text-xs outline-none w-full"
-        type="text"
-        placeholder="Company or stock symbol..."
-      />
+    <div className="relative">
+      <div className={clsx("flex items-center space-x-1 border px-2 py-1 border-on-surface/50 w-xs max-w-60 bg-surface", {
+        "rounded-full": !isExpanded,
+        "rounded-t-xl": isExpanded,
+      })}>
+        <IoIosSearch />
+        <input onClick={e => setIsExpanded(v => !v)}
+          className="text-xs outline-none w-full placeholder:text-on-surface"
+          type="text"
+          placeholder="Company or stock symbol..."
+        />
+      </div>
       {isExpanded && (
         <ul className="absolute top-6 w-full left-0 text-sm font-semibold border shadow-lg bg-surface text-on-surface border-on-surface/50 divide-y divide-on-surface/50">
           {stocks.map(stock => (<li key={stock.ticker}>
-            <button className="cursor-pointer w-full flex items-center px-2 py-1"><div className="w-1/4 text-start">{stock.ticker}</div><div className="w-3/4 font-normal text-start">{stock.description}</div></button>
+            <button className="cursor-pointer w-full flex items-center px-2 py-1 text-xs"><div className="w-1/4 text-start">{stock.ticker}</div><div className="w-3/4 font-normal text-start">{stock.description}</div></button>
           </li>))}
         </ul>
       )}
