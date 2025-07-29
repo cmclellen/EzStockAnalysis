@@ -29,6 +29,11 @@ function reducer(state: any, action: any) {
       ...state,
       isExpanded: action.payload,
     };
+  } else if (action.type === "set_search_term") {
+    return {
+      ...state,
+      searchTerm: action.payload,
+    };
   }
   throw Error(`Unknown action ${action.type}.`);
 }
@@ -43,15 +48,15 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
     showTrending: true,
     tickers: [],
     isExpanded: false,
+    searchTerm: "",
   });
   const wrapperRef: RefObject<HTMLDivElement | null> = useRef(null);
-  const [searchTerm, setSearchTerm] = useState("");
   useClickOutside(wrapperRef, () =>
     dispatch({ type: "expand", payload: false })
   );
 
   useEffect(() => {
-    if (searchTerm.trim().length === 0) {
+    if (state.searchTerm.trim().length === 0) {
       dispatch({ type: "show_trending_stock" });
       return;
     }
@@ -60,7 +65,7 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
     const fetchStocks = async () => {
       try {
         const res = await fetch(
-          `/api/stocks?query=${encodeURIComponent(searchTerm)}`,
+          `/api/stocks?query=${encodeURIComponent(state.searchTerm)}`,
           {
             signal: controller.signal,
           }
@@ -78,7 +83,7 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
 
     fetchStocks();
     return () => controller.abort();
-  }, [searchTerm]);
+  }, [state.searchTerm]);
 
   function addTicker(stock: any) {
     dispatch({ type: "add_ticker", payload: stock.name });
@@ -101,8 +106,10 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
           className="text-xs outline-none w-full placeholder:text-on-surface"
           type="text"
           placeholder="Company or stock symbol..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={state.searchTerm}
+          onChange={(e) =>
+            dispatch({ type: "set_search_term", payload: e.target.value })
+          }
         />
       </div>
       {state.showTrending}
