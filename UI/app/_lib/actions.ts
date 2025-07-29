@@ -24,8 +24,6 @@ export async function updateGuest(formData: FormData) {
 
   const updateData = { nationality, countryFlag };
 
-  console.log("updateData", updateData);
-
   const user = session.user! as { guestId: number };
 
   const { error } = await supabase
