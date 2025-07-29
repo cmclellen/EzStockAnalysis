@@ -98,8 +98,8 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
             (stock: any) => (
               <li key={stock.ticker}>
                 <button className="cursor-pointer w-full flex items-center px-2 py-1 text-xs">
-                  <div className="w-1/4 text-start">{stock.ticker}</div>
-                  <div className="w-3/4 font-normal text-start">
+                  <div className="w-1/4 text-start">{stock.name}</div>
+                  <div className="w-3/4 font-normal text-start truncate">
                     {stock.description}
                   </div>
                 </button>

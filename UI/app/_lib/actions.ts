@@ -42,45 +42,22 @@ type GetStocksResponseData = {
 };
 
 export async function getTrendingStock(): Promise<GetStocksResponseData> {
-  const data = [
-    {
-      ticker: "NVDA",
-      description: "NVIDIA Corporation",
-    },
-    {
-      ticker: "AAPL",
-      description: "Apple Inc.",
-    },
-    {
-      ticker: "GOOGL",
-      description: "Alphabet Inc.",
-    },
-    {
-      ticker: "MSFT",
-      description: "Microsoft Corporation",
-    },
-  ];
-  return { items: data };
+  const { data: stockTickers, error } = await supabase
+    .from("stock-ticker")
+    .select("*")
+    .range(0, 3);
+
+  if (error) throw new Error("Failed fetching stock tickers");
+
+  return { items: stockTickers };
 }
 
-export async function getStock(): Promise<GetStocksResponseData> {
-  const data = [
-    {
-      ticker: "NVDA",
-      description: "NVIDIA Corporation",
-    },
-    {
-      ticker: "AAPL",
-      description: "Apple Inc.",
-    },
-    {
-      ticker: "GOOGL",
-      description: "Alphabet Inc.",
-    },
-    {
-      ticker: "MSFT",
-      description: "Microsoft Corporation",
-    },
-  ];
-  return { items: data };
+export async function getStock(query: string): Promise<GetStocksResponseData> {
+  const { data: stockTickers, error } = await supabase
+    .from("stock-ticker")
+    .select("*")
+    .ilike("name", `%${query}%`);
+
+  if (error) throw new Error("Failed fetching stock tickers");
+  return { items: stockTickers };
 }
