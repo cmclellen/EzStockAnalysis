@@ -10,7 +10,10 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Ez Stock Analysis",
+  title: {
+    template: "%s :: Ez Stock Analysis",
+    default: "Welcome :: Ez Stock Analysis",
+  },
   description: "A simple stock analysis app",
 };
 

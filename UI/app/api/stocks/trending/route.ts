@@ -26,13 +26,8 @@ type GetStocksResponseData = {
   items: StockTicker[];
 };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ query: string }> }
-): Promise<Response> {
-  const query = (await params).query;
-  const filtered = stocks.items.filter((s) => s.ticker.startsWith(query));
-  return new Response(JSON.stringify(filtered), {
+export async function GET(_request: NextRequest): Promise<Response> {
+  return new Response(JSON.stringify(stocks), {
     headers: { "Content-Type": "application/json" },
   });
 }
