@@ -1,5 +1,5 @@
 import { StockTicker } from '@/app/_lib/types';
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server';
 
 const stocks: GetStocksResponseData = {
     items: [
@@ -26,7 +26,7 @@ type GetStocksResponseData = {
     items: StockTicker[]
 }
 
-export async function GET(_request: NextApiRequest, _response: NextApiResponse<GetStocksResponseData>) {
+export async function GET(_request: NextRequest, _response: NextResponse<GetStocksResponseData>) {
     return new Response(JSON.stringify(stocks), {
         headers: { 'Content-Type': 'application/json' },
     });
