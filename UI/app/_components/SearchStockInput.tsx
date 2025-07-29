@@ -51,7 +51,7 @@ function SearchStockInput(_props: SearchStockInputProps) {
         "rounded-t-xl": isExpanded,
       })}>
         <IoIosSearch />
-        <input onClick={e => setIsExpanded(v => !v)}
+        <input onClick={_e => setIsExpanded(v => !v)}
           className="text-xs outline-none w-full placeholder:text-on-surface"
           type="text"
           placeholder="Company or stock symbol..."

@@ -9,7 +9,7 @@ export type Guest = {
 
 // Guests are uniquely identified by their email address
 export async function getGuest(email: string) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("guest")
     .select("*")
     .eq("email", email)

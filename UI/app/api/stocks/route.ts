@@ -26,10 +26,7 @@ type GetStocksResponseData = {
     items: StockTicker[]
 }
 
-export async function GET(
-    req: NextApiRequest,
-    res: NextApiResponse<GetStocksResponseData>
-) {
+export async function GET(_request: NextApiRequest, _response: NextApiResponse<GetStocksResponseData>) {
     return new Response(JSON.stringify(stocks), {
         headers: { 'Content-Type': 'application/json' },
     });
