@@ -12,15 +12,25 @@ function reducer(state: any, action: any) {
       ...state,
       showTrending: true,
     };
-  }
-  if (action.type === "set_stock") {
+  } else if (action.type === "set_stock") {
     return {
       ...state,
       stock: action.payload,
       showTrending: false,
     };
+  } else if (action.type === "add_ticker") {
+    return {
+      ...state,
+      tickers: [...new Set([...state.tickers, action.payload])],
+      isExpanded: false,
+    };
+  } else if (action.type === "expand") {
+    return {
+      ...state,
+      isExpanded: action.payload,
+    };
   }
-  throw Error("Unknown action.");
+  throw Error(`Unknown action ${action.type}.`);
 }
 
 type SearchStockInputProps = {
@@ -28,14 +38,17 @@ type SearchStockInputProps = {
 };
 
 function SearchStockInput({ trendingStock }: SearchStockInputProps) {
-  const wrapperRef: RefObject<HTMLDivElement | null> = useRef(null);
-  useClickOutside(wrapperRef, () => setIsExpanded(false));
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [state, dispatch] = useReducer(reducer, {
     trendingStock: trendingStock,
     showTrending: true,
+    tickers: [],
+    isExpanded: false,
   });
+  const wrapperRef: RefObject<HTMLDivElement | null> = useRef(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  useClickOutside(wrapperRef, () =>
+    dispatch({ type: "expand", payload: false })
+  );
 
   useEffect(() => {
     if (searchTerm.trim().length === 0) {
@@ -67,20 +80,24 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
     return () => controller.abort();
   }, [searchTerm]);
 
+  function addTicker(stock: any) {
+    dispatch({ type: "add_ticker", payload: stock.name });
+  }
+
   return (
     <div ref={wrapperRef} className="relative">
       <div
         className={clsx(
           "flex items-center space-x-1 border px-2 py-1 border-on-surface/50 w-xs max-w-60 bg-surface",
           {
-            "rounded-full": !isExpanded,
-            "rounded-t-xl": isExpanded,
+            "rounded-full": !state.isExpanded,
+            "rounded-t-xl": state.isExpanded,
           }
         )}
       >
         <IoIosSearch />
         <input
-          onClick={() => setIsExpanded(true)}
+          onClick={() => dispatch({ type: "expand", payload: true })}
           className="text-xs outline-none w-full placeholder:text-on-surface"
           type="text"
           placeholder="Company or stock symbol..."
@@ -89,15 +106,18 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
         />
       </div>
       {state.showTrending}
-      {isExpanded && (
+      {state.isExpanded && (
         <ul className="absolute top-6 w-full left-0 text-sm font-semibold border shadow-lg bg-surface text-on-surface border-on-surface/50 divide-y divide-on-surface/50">
           {state.showTrending && (
             <li className="font-semibold px-2 py-1 text-md italic">Trending</li>
           )}
           {(state.showTrending ? state.trendingStock : state.stock).map(
             (stock: any) => (
-              <li key={stock.ticker}>
-                <button className="cursor-pointer w-full flex items-center px-2 py-1 text-xs">
+              <li key={stock.name}>
+                <button
+                  className="cursor-pointer w-full flex items-center px-2 py-1 text-xs"
+                  onClick={() => addTicker(stock)}
+                >
                   <div className="w-1/4 text-start">{stock.name}</div>
                   <div className="w-3/4 font-normal text-start truncate">
                     {stock.description}
