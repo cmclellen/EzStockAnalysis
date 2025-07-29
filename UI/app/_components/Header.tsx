@@ -1,32 +1,11 @@
+import { Session } from "next-auth";
 import Image from "next/image";
-import Navigation from "./Navigation";
-import SearchStockInput from "./SearchStockInput";
+import Link from "next/link";
+import { getTrendingStock } from "../_lib/actions";
 import { auth } from "../_lib/auth";
 import { UserProfileInfo } from "../_lib/types";
-import { Session } from "next-auth";
-import Link from "next/link";
-
-async function getTrendingStock() {
-  const data = [
-    {
-      ticker: "NVDA",
-      description: "NVIDIA Corporation",
-    },
-    {
-      ticker: "AAPL",
-      description: "Apple Inc.",
-    },
-    {
-      ticker: "GOOGL",
-      description: "Alphabet Inc.",
-    },
-    {
-      ticker: "MSFT",
-      description: "Microsoft Corporation",
-    },
-  ];
-  return data;
-}
+import Navigation from "./Navigation";
+import SearchStockInput from "./SearchStockInput";
 
 async function Header() {
   const session: Session | null = await auth();
@@ -56,7 +35,7 @@ async function Header() {
         </Link>
 
         <div className="hidden md:block">
-          <SearchStockInput trendingStock={trendingStock} />
+          <SearchStockInput trendingStock={trendingStock.items} />
         </div>
 
         <Navigation userProfile={userProfile} />

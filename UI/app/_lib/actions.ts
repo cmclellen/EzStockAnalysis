@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
+import { StockTicker } from "./types";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -34,4 +35,52 @@ export async function updateGuest(formData: FormData) {
   if (error) throw new Error("Guest could not be updated");
 
   revalidatePath("/profile");
+}
+
+type GetStocksResponseData = {
+  items: StockTicker[];
+};
+
+export async function getTrendingStock(): Promise<GetStocksResponseData> {
+  const data = [
+    {
+      ticker: "NVDA",
+      description: "NVIDIA Corporation",
+    },
+    {
+      ticker: "AAPL",
+      description: "Apple Inc.",
+    },
+    {
+      ticker: "GOOGL",
+      description: "Alphabet Inc.",
+    },
+    {
+      ticker: "MSFT",
+      description: "Microsoft Corporation",
+    },
+  ];
+  return { items: data };
+}
+
+export async function getStock(): Promise<GetStocksResponseData> {
+  const data = [
+    {
+      ticker: "NVDA",
+      description: "NVIDIA Corporation",
+    },
+    {
+      ticker: "AAPL",
+      description: "Apple Inc.",
+    },
+    {
+      ticker: "GOOGL",
+      description: "Alphabet Inc.",
+    },
+    {
+      ticker: "MSFT",
+      description: "Microsoft Corporation",
+    },
+  ];
+  return { items: data };
 }
