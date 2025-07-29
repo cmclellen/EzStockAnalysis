@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
+import { StockTicker } from "./types";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -24,8 +25,6 @@ export async function updateGuest(formData: FormData) {
 
   const updateData = { nationality, countryFlag };
 
-  console.log("updateData", updateData);
-
   const user = session.user! as { guestId: number };
 
   const { error } = await supabase
@@ -36,4 +35,29 @@ export async function updateGuest(formData: FormData) {
   if (error) throw new Error("Guest could not be updated");
 
   revalidatePath("/profile");
+}
+
+type GetStocksResponseData = {
+  items: StockTicker[];
+};
+
+export async function getTrendingStock(): Promise<GetStocksResponseData> {
+  const { data: stockTickers, error } = await supabase
+    .from("stock-ticker")
+    .select("*")
+    .range(0, 3);
+
+  if (error) throw new Error("Failed fetching stock tickers");
+
+  return { items: stockTickers };
+}
+
+export async function getStock(query: string): Promise<GetStocksResponseData> {
+  const { data: stockTickers, error } = await supabase
+    .from("stock-ticker")
+    .select("*")
+    .ilike("name", `%${query}%`);
+
+  if (error) throw new Error("Failed fetching stock tickers");
+  return { items: stockTickers };
 }

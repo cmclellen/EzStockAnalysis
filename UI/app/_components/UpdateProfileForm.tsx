@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import { updateGuest } from "../_lib/actions";
 import { Guest } from "../_lib/data-service";
 import SubmitButton from "./SubmitButton";
+import toast from "react-hot-toast";
 
 type UpdateProfileFormProps = {
   guest: Guest;
@@ -15,8 +16,13 @@ type UpdateProfileFormProps = {
 function UpdateProfileForm({ guest, children }: UpdateProfileFormProps) {
   const { fullName, email, countryFlag } = guest;
 
+  async function handleUpdateGuest(formData: FormData) {
+    await updateGuest(formData);
+    toast("Profile updated successfully");
+  }
+
   return (
-    <Form action={updateGuest} className="form space-y-2 py-3">
+    <Form action={handleUpdateGuest} className="form space-y-2 py-3">
       <div className="form-field">
         <label htmlFor="fullName" className="form-field-label">
           Full name

@@ -1,13 +1,15 @@
+import { Session } from "next-auth";
 import Image from "next/image";
-import Navigation from "./Navigation";
-import SearchStockInput from "./SearchStockInput";
+import Link from "next/link";
+import { getTrendingStock } from "../_lib/actions";
 import { auth } from "../_lib/auth";
 import { UserProfileInfo } from "../_lib/types";
-import { Session } from "next-auth";
-import Link from "next/link";
+import Navigation from "./Navigation";
+import SearchStockInput from "./SearchStockInput";
 
 async function Header() {
   const session: Session | null = await auth();
+  const trendingStock = await getTrendingStock();
 
   const user = session?.user;
 
@@ -33,7 +35,7 @@ async function Header() {
         </Link>
 
         <div className="hidden md:block">
-          <SearchStockInput />
+          <SearchStockInput trendingStock={trendingStock.items} />
         </div>
 
         <Navigation userProfile={userProfile} />

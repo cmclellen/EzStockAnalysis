@@ -1,33 +1,12 @@
-import { StockTicker } from '@/app/_lib/types';
-import { NextRequest } from 'next/server';
+import { getStock } from "@/app/_lib/actions";
+import { NextRequest } from "next/server";
 
-const stocks: GetStocksResponseData = {
-    items: [
-        {
-            ticker: "NVDA",
-            description: "NVIDIA Corporation"
-        },
-        {
-            ticker: "AAPL",
-            description: "Apple Inc."
-        },
-        {
-            ticker: "GOOGL",
-            description: "Alphabet Inc."
-        },
-        {
-            ticker: "MSFT",
-            description: "Microsoft Corporation"
-        }
-    ]
-};
+export async function GET(request: NextRequest): Promise<Response> {
+  const searchParams = request.nextUrl.searchParams;
+  const query = searchParams.get("query")!;
+  const filtered = (await getStock(query)).items;
 
-type GetStocksResponseData = {
-    items: StockTicker[]
-}
-
-export async function GET(_request: NextRequest): Promise<Response> {
-    return new Response(JSON.stringify(stocks), {
-        headers: { 'Content-Type': 'application/json' },
-    });
+  return new Response(JSON.stringify({ items: filtered }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }

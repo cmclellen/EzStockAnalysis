@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import PageHeader from "../_components/PageHeader";
 import SelectCountry from "../_components/SelectCountry";
 import UpdateProfileForm from "../_components/UpdateProfileForm";
@@ -5,6 +6,10 @@ import { auth } from "../_lib/auth";
 import { getGuest } from "../_lib/data-service";
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Profile",
+};
 
 type pageProps = {
   // guest: Guest;
