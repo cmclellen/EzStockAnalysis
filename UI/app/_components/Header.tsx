@@ -6,8 +6,31 @@ import { UserProfileInfo } from "../_lib/types";
 import { Session } from "next-auth";
 import Link from "next/link";
 
+async function getTrendingStock() {
+  const data = [
+    {
+      ticker: "NVDA",
+      description: "NVIDIA Corporation",
+    },
+    {
+      ticker: "AAPL",
+      description: "Apple Inc.",
+    },
+    {
+      ticker: "GOOGL",
+      description: "Alphabet Inc.",
+    },
+    {
+      ticker: "MSFT",
+      description: "Microsoft Corporation",
+    },
+  ];
+  return data;
+}
+
 async function Header() {
   const session: Session | null = await auth();
+  const trendingStock = await getTrendingStock();
 
   const user = session?.user;
 
@@ -33,7 +56,7 @@ async function Header() {
         </Link>
 
         <div className="hidden md:block">
-          <SearchStockInput />
+          <SearchStockInput trendingStock={trendingStock} />
         </div>
 
         <Navigation userProfile={userProfile} />

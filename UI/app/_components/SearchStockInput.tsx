@@ -1,24 +1,45 @@
 "use client";
 
 import clsx from "clsx";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useReducer, useRef, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useClickOutside } from "../_hooks/useClickOutside";
+import { StockTicker } from "../_lib/types";
+
+function reducer(state: any, action: any) {
+  if (action.type === "show_trending_stock") {
+    return {
+      ...state,
+      showTrending: true,
+    };
+  }
+  if (action.type === "set_stock") {
+    return {
+      ...state,
+      stock: action.payload,
+      showTrending: false,
+    };
+  }
+  throw Error("Unknown action.");
+}
 
 type SearchStockInputProps = {
-  //children: React.ReactNode;
+  trendingStock: StockTicker[];
 };
 
-function SearchStockInput(_props: SearchStockInputProps) {
+function SearchStockInput({ trendingStock }: SearchStockInputProps) {
   const wrapperRef: RefObject<HTMLDivElement | null> = useRef(null);
   useClickOutside(wrapperRef, () => setIsExpanded(false));
   const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [stocks, setStocks] = useState<any>([]);
+  const [state, dispatch] = useReducer(reducer, {
+    trendingStock: trendingStock,
+    showTrending: true,
+  });
 
   useEffect(() => {
     if (searchTerm.trim().length === 0) {
-      setStocks([]);
+      dispatch({ type: "show_trending_stock" });
       return;
     }
 
@@ -33,10 +54,11 @@ function SearchStockInput(_props: SearchStockInputProps) {
         );
         if (!res.ok) return;
         const data = await res.json();
-        setStocks(data.items);
+
+        dispatch({ type: "set_stock", payload: data.items });
       } catch (err: any) {
         if (err.name !== "AbortError") {
-          setStocks([]);
+          dispatch({ type: "show_trending_stock" });
         }
       }
     };
@@ -58,7 +80,7 @@ function SearchStockInput(_props: SearchStockInputProps) {
       >
         <IoIosSearch />
         <input
-          onClick={(_e) => setIsExpanded((v) => !v)}
+          onClick={() => setIsExpanded(true)}
           className="text-xs outline-none w-full placeholder:text-on-surface"
           type="text"
           placeholder="Company or stock symbol..."
@@ -66,18 +88,24 @@ function SearchStockInput(_props: SearchStockInputProps) {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+      {state.showTrending}
       {isExpanded && (
         <ul className="absolute top-6 w-full left-0 text-sm font-semibold border shadow-lg bg-surface text-on-surface border-on-surface/50 divide-y divide-on-surface/50">
-          {stocks.map((stock: any) => (
-            <li key={stock.ticker}>
-              <button className="cursor-pointer w-full flex items-center px-2 py-1 text-xs">
-                <div className="w-1/4 text-start">{stock.ticker}</div>
-                <div className="w-3/4 font-normal text-start">
-                  {stock.description}
-                </div>
-              </button>
-            </li>
-          ))}
+          {state.showTrending && (
+            <li className="font-semibold px-2 py-1 text-md italic">Trending</li>
+          )}
+          {(state.showTrending ? state.trendingStock : state.stock).map(
+            (stock: any) => (
+              <li key={stock.ticker}>
+                <button className="cursor-pointer w-full flex items-center px-2 py-1 text-xs">
+                  <div className="w-1/4 text-start">{stock.ticker}</div>
+                  <div className="w-3/4 font-normal text-start">
+                    {stock.description}
+                  </div>
+                </button>
+              </li>
+            )
+          )}
         </ul>
       )}
     </div>
