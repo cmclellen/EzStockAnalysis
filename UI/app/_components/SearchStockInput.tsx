@@ -5,6 +5,8 @@ import { RefObject, useEffect, useReducer, useRef, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useClickOutside } from "../_hooks/useClickOutside";
 import { StockTicker } from "../_lib/types";
+import { addStockTicker } from "@/lib/features/stocks/stocksSlice";
+import { useAppDispatch } from "@/lib/store";
 
 function reducer(state: any, action: any) {
   if (action.type === "show_trending_stock") {
@@ -21,8 +23,10 @@ function reducer(state: any, action: any) {
   } else if (action.type === "add_ticker") {
     return {
       ...state,
-      tickers: [...new Set([...state.tickers, action.payload])],
+      //tickers: [...new Set([...state.tickers, action.payload])],
       isExpanded: false,
+      searchTerm: "",
+      showTrending: true,
     };
   } else if (action.type === "expand") {
     return {
@@ -43,10 +47,11 @@ type SearchStockInputProps = {
 };
 
 function SearchStockInput({ trendingStock }: SearchStockInputProps) {
+  const appDispatch = useAppDispatch();
   const [state, dispatch] = useReducer(reducer, {
     trendingStock: trendingStock,
     showTrending: true,
-    tickers: [],
+    //tickers: [],
     isExpanded: false,
     searchTerm: "",
   });
@@ -86,7 +91,8 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
   }, [state.searchTerm]);
 
   function addTicker(stock: any) {
-    dispatch({ type: "add_ticker", payload: stock.name });
+    //dispatch({ type: "add_ticker", payload: stock.name });
+    appDispatch(addStockTicker(stock.name));
   }
 
   return (

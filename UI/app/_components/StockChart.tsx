@@ -1,5 +1,8 @@
 "use client";
 
+import { removeStockTicker } from "@/lib/features/stocks/stocksSlice";
+import { getStockTickers, useAppDispatch, useAppSelector } from "@/lib/store";
+import { FaTimes } from "react-icons/fa";
 import {
   LineChart,
   Line,
@@ -61,35 +64,51 @@ type StockChartProps = {
 };
 
 function StockChart(_props: StockChartProps) {
+  const appDispatch = useAppDispatch();
+  const stockTickers = useAppSelector(getStockTickers);
   return (
-    
-    <ResponsiveContainer width="100%" height="100%" className="" aspect={3}>
-      <LineChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line
-          type="monotone"
-          dataKey="pv"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        />
-        <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
-      </LineChart>
-    </ResponsiveContainer>
-
+    <>
+      <ul className="flex items-center text-xs space-x-1">
+        {stockTickers &&
+          stockTickers.map((st) => (
+            <li
+              key={st}
+              className="bg-on-surface text-surface px-1 py-0 rounded-full flex items-center space-x-1 font-semibold"
+            >
+              <span>{st}</span>
+              <button onClick={() => appDispatch(removeStockTicker(st))}>
+                <FaTimes />
+              </button>
+            </li>
+          ))}
+      </ul>
+      <ResponsiveContainer width="100%" height="100%" className="" aspect={3}>
+        <LineChart
+          width={500}
+          height={300}
+          data={data}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line
+            type="monotone"
+            dataKey="pv"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+        </LineChart>
+      </ResponsiveContainer>
+    </>
   );
 }
 
