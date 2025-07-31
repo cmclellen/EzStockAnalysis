@@ -71,3 +71,12 @@ export async function addStock(
     .insert([{ guestId, stockId }]);
   if (error) throw error;
 }
+
+export async function getStocksByGuestId(guestId: number): Promise<any> {
+  const { data, error } = await supabase
+    .from("guest-stock")
+    .select("*, stock (name)")
+    .eq("guestId", guestId);
+  if (error) throw error;
+  return data;
+}

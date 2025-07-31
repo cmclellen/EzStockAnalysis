@@ -28,6 +28,26 @@ export const addStockTickerAsync = createAsyncThunk(
   }
 );
 
+export const getStockTickerAsync = createAsyncThunk(
+  "stocks/getStockTickerAsync",
+  async (payload: { guestId: number }) => {
+    const response = await fetch(
+      `/api/guest-stocks?guestId=${payload.guestId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error);
+    }
+    return response.json();
+  }
+);
+
 const stocksSlice = createSlice({
   name: "stocks",
   initialState: initialState,
@@ -48,6 +68,19 @@ const stocksSlice = createSlice({
         state.status = "idle";
       })
       .addCase(addStockTickerAsync.rejected, (state) => {
+        state.status = "failed";
+      })
+      .addCase(getStockTickerAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getStockTickerAsync.fulfilled, (state, action: any) => {
+        const newItems = action.payload.items.filter(
+          (item: string) => !state.stocktickers.includes(item)
+        );
+        state.stocktickers.push(...newItems);
+        state.status = "idle";
+      })
+      .addCase(getStockTickerAsync.rejected, (state) => {
         state.status = "failed";
       });
   },

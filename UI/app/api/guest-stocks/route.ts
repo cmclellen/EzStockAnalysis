@@ -1,10 +1,11 @@
-import { addStock, getStock } from "@/app/_lib/actions";
+import { addStock, getStocksByGuestId } from "@/app/_lib/actions";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest): Promise<Response> {
   const searchParams = request.nextUrl.searchParams;
-  const query = searchParams.get("query")!;
-  const filtered = (await getStock(query)).items;
+  const guestId: any = searchParams.get("guestId")!;
+  const stockItems = await getStocksByGuestId(guestId);
+  const filtered = stockItems.map((item: any) => item.stock.name);
 
   return new Response(JSON.stringify({ items: filtered }), {
     headers: { "Content-Type": "application/json" },
