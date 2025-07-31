@@ -13,7 +13,7 @@ const initialState: StocksState = {
 export const addStockTickerAsync = createAsyncThunk(
   "stocks/addStockTickerAsync",
   async (payload: { guestId: number; stockId: number }) => {
-    const response = await fetch("/api/stocks", {
+    const response = await fetch("/api/guest-stocks", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ const stocksSlice = createSlice({
       .addCase(addStockTickerAsync.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(addStockTickerAsync.fulfilled, (state, action) => {
+      .addCase(addStockTickerAsync.fulfilled, (state, action: any) => {
         state.stocktickers.push(action.payload.ticker);
         state.status = "idle";
       })

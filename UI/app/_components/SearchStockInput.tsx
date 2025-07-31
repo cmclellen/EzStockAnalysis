@@ -93,6 +93,7 @@ function SearchStockInput({ trendingStock, guestId }: SearchStockInputProps) {
   function addTicker(stock: any) {
     const payload = { stockId: stock.id, guestId, ticker: stock.name };
     appDispatch(addStockTickerAsync(payload));
+    dispatch({ type: "expand", payload: false });
   }
 
   return (
