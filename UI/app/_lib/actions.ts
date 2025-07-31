@@ -43,7 +43,7 @@ type GetStocksResponseData = {
 
 export async function getTrendingStock(): Promise<GetStocksResponseData> {
   const { data: stockTickers, error } = await supabase
-    .from("stock-ticker")
+    .from("stock")
     .select("*")
     .range(0, 3);
 
@@ -54,10 +54,29 @@ export async function getTrendingStock(): Promise<GetStocksResponseData> {
 
 export async function getStock(query: string): Promise<GetStocksResponseData> {
   const { data: stockTickers, error } = await supabase
-    .from("stock-ticker")
+    .from("stock")
     .select("*")
     .ilike("name", `%${query}%`);
 
   if (error) throw new Error("Failed fetching stock tickers");
   return { items: stockTickers };
+}
+
+export async function addStock(
+  guestId: number,
+  stockId: number
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("guest-stock")
+    .insert([{ guestId, stockId }]);
+  if (error) throw error;
+}
+
+export async function getStocksByGuestId(guestId: number): Promise<any> {
+  const { data, error } = await supabase
+    .from("guest-stock")
+    .select("*, stock (name)")
+    .eq("guestId", guestId);
+  if (error) throw error;
+  return data;
 }

@@ -1,12 +1,12 @@
 "use client";
 
+import { addStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
+import { useAppDispatch } from "@/lib/store";
 import clsx from "clsx";
-import { RefObject, useEffect, useReducer, useRef, useState } from "react";
+import { RefObject, useEffect, useReducer, useRef } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useClickOutside } from "../_hooks/useClickOutside";
 import { StockTicker } from "../_lib/types";
-import { addStockTicker } from "@/lib/features/stocks/stocksSlice";
-import { useAppDispatch } from "@/lib/store";
 
 function reducer(state: any, action: any) {
   if (action.type === "show_trending_stock") {
@@ -44,14 +44,14 @@ function reducer(state: any, action: any) {
 
 type SearchStockInputProps = {
   trendingStock: StockTicker[];
+  guestId: number;
 };
 
-function SearchStockInput({ trendingStock }: SearchStockInputProps) {
+function SearchStockInput({ trendingStock, guestId }: SearchStockInputProps) {
   const appDispatch = useAppDispatch();
   const [state, dispatch] = useReducer(reducer, {
     trendingStock: trendingStock,
     showTrending: true,
-    //tickers: [],
     isExpanded: false,
     searchTerm: "",
   });
@@ -91,8 +91,9 @@ function SearchStockInput({ trendingStock }: SearchStockInputProps) {
   }, [state.searchTerm]);
 
   function addTicker(stock: any) {
-    //dispatch({ type: "add_ticker", payload: stock.name });
-    appDispatch(addStockTicker(stock.name));
+    const payload = { stockId: stock.id, guestId, ticker: stock.name };
+    appDispatch(addStockTickerAsync(payload));
+    dispatch({ type: "expand", payload: false });
   }
 
   return (

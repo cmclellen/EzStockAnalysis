@@ -1,29 +1,92 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type StocksState = {
   stocktickers: string[];
+  status: "idle" | "loading" | "failed";
 };
 
 const initialState: StocksState = {
   stocktickers: [],
+  status: "idle",
 };
+
+export const addStockTickerAsync = createAsyncThunk(
+  "stocks/addStockTickerAsync",
+  async (payload: { guestId: number; stockId: number }) => {
+    const response = await fetch("/api/guest-stocks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error);
+    }
+    return payload;
+  }
+);
+
+export const getStockTickerAsync = createAsyncThunk(
+  "stocks/getStockTickerAsync",
+  async (payload: { guestId: number }) => {
+    const response = await fetch(
+      `/api/guest-stocks?guestId=${payload.guestId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error);
+    }
+    return response.json();
+  }
+);
 
 const stocksSlice = createSlice({
   name: "stocks",
   initialState: initialState,
   reducers: {
-    addStockTicker(state: StocksState, action: PayloadAction<string>) {
-      state.stocktickers.push(action.payload);
-    },
     removeStockTicker(state: StocksState, action: PayloadAction<string>) {
       state.stocktickers = state.stocktickers.filter(
         (item) => item !== action.payload
       );
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(addStockTickerAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(addStockTickerAsync.fulfilled, (state, action: any) => {
+        state.stocktickers.push(action.payload.ticker);
+        state.status = "idle";
+      })
+      .addCase(addStockTickerAsync.rejected, (state) => {
+        state.status = "failed";
+      })
+      .addCase(getStockTickerAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getStockTickerAsync.fulfilled, (state, action: any) => {
+        const newItems = action.payload.items.filter(
+          (item: string) => !state.stocktickers.includes(item)
+        );
+        state.stocktickers.push(...newItems);
+        state.status = "idle";
+      })
+      .addCase(getStockTickerAsync.rejected, (state) => {
+        state.status = "failed";
+      });
+  },
 });
 
 const stockReducers = stocksSlice.reducer;
 
-export const { addStockTicker, removeStockTicker } = stocksSlice.actions;
+export const { removeStockTicker } = stocksSlice.actions;
 export default stockReducers;
