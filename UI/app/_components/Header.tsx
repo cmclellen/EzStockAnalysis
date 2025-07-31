@@ -35,7 +35,10 @@ async function Header() {
         </Link>
 
         <div className="hidden md:block">
-          <SearchStockInput trendingStock={trendingStock.items} />
+          <SearchStockInput
+            trendingStock={trendingStock.items}
+            guestId={user!.guestId}
+          />
         </div>
 
         <Navigation userProfile={userProfile} />

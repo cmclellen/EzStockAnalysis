@@ -1,4 +1,4 @@
-import { getStock } from "@/app/_lib/actions";
+import { addStock, getStock } from "@/app/_lib/actions";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest): Promise<Response> {
@@ -9,4 +9,10 @@ export async function GET(request: NextRequest): Promise<Response> {
   return new Response(JSON.stringify({ items: filtered }), {
     headers: { "Content-Type": "application/json" },
   });
+}
+
+export async function POST(request: NextRequest): Promise<Response> {
+  const body = await request.json();
+  await addStock(body.guestId, body.stockId);
+  return new Response(null, { status: 204 });
 }
