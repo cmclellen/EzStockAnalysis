@@ -66,7 +66,7 @@ export async function addStock(
   guestId: number,
   stockId: number
 ): Promise<void> {
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("guest-stock")
     .insert([{ guestId, stockId }]);
   if (error) throw error;
