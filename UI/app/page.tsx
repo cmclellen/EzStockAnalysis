@@ -27,7 +27,9 @@ export default function Home() {
 
   return (
     <div className=" border-red-400">
-      <StockChart />
+      {session?.user?.guestId && (
+        <StockChart guestId={session?.user?.guestId} />
+      )}
     </div>
   );
 }

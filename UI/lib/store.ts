@@ -8,7 +8,7 @@ const store = configureStore({
   },
 });
 
-export const getStockTickers = (state: RootState) => state.stock.stocktickers;
+export const getStockTickers = (state: RootState) => state.stock.stocks;
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
