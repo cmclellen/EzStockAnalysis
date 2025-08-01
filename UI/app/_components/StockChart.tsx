@@ -1,18 +1,19 @@
 "use client";
 
-import { removeStockTicker } from "@/lib/features/stocks/stocksSlice";
+import { removeStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
 import { getStockTickers, useAppDispatch, useAppSelector } from "@/lib/store";
 import { FaTimes } from "react-icons/fa";
 import {
-  LineChart,
+  CartesianGrid,
+  Legend,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from "recharts";
+import { Stock } from "../_lib/types";
 
 const data = [
   {
@@ -59,29 +60,56 @@ const data = [
   },
 ];
 
+function StockPill({ stock, guestId }: { stock: Stock; guestId: number }) {
+  const appDispatch = useAppDispatch();
+  return (
+    <li
+      key={stock.ticker}
+      className="bg-on-surface text-surface px-1 py-0 rounded-full flex items-center space-x-1 font-semibold"
+    >
+      <span>{stock.ticker}</span>
+      <button
+        onClick={() =>
+          appDispatch(
+            removeStockTickerAsync({
+              stockId: stock.stockId,
+              guestId: guestId,
+            })
+          )
+        }
+      >
+        <FaTimes />
+      </button>
+    </li>
+  );
+}
+
+function StockPillList({
+  stocks,
+  guestId,
+}: {
+  stocks: Stock[];
+  guestId: number;
+}) {
+  return (
+    <ul className="flex items-center text-xs space-x-1">
+      {stocks &&
+        stocks.map((st) => (
+          <StockPill key={st.ticker} stock={st} guestId={guestId} />
+        ))}
+    </ul>
+  );
+}
+
 type StockChartProps = {
-  //children: React.ReactNode;
+  guestId: number;
 };
 
-function StockChart(_props: StockChartProps) {
-  const appDispatch = useAppDispatch();
+function StockChart({ guestId }: StockChartProps) {
   const stockTickers = useAppSelector(getStockTickers);
   return (
     <>
-      <ul className="flex items-center text-xs space-x-1">
-        {stockTickers &&
-          stockTickers.map((st) => (
-            <li
-              key={st}
-              className="bg-on-surface text-surface px-1 py-0 rounded-full flex items-center space-x-1 font-semibold"
-            >
-              <span>{st}</span>
-              <button onClick={() => appDispatch(removeStockTicker(st))}>
-                <FaTimes />
-              </button>
-            </li>
-          ))}
-      </ul>
+      <StockPillList stocks={stockTickers} guestId={guestId} />
       <ResponsiveContainer width="100%" height="100%" className="" aspect={3}>
         <LineChart
           width={500}

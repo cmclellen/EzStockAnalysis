@@ -8,7 +8,6 @@ import { UserProfileInfo } from "../_lib/types";
 import NavigationUserProfile from "./NavigationUserProfile";
 
 type NavigationProps = {
-  //children: React.ReactNode;
   userProfile: UserProfileInfo | null;
 };
 

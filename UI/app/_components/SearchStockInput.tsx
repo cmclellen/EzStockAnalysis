@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { RefObject, useEffect, useReducer, useRef } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { useClickOutside } from "../_hooks/useClickOutside";
-import { StockTicker } from "../_lib/types";
+import { Stock } from "../_lib/types";
 
 function reducer(state: any, action: any) {
   if (action.type === "show_trending_stock") {
@@ -23,7 +23,6 @@ function reducer(state: any, action: any) {
   } else if (action.type === "add_ticker") {
     return {
       ...state,
-      //tickers: [...new Set([...state.tickers, action.payload])],
       isExpanded: false,
       searchTerm: "",
       showTrending: true,
@@ -43,7 +42,7 @@ function reducer(state: any, action: any) {
 }
 
 type SearchStockInputProps = {
-  trendingStock: StockTicker[];
+  trendingStock: Stock[];
   guestId: number;
 };
 
@@ -90,8 +89,8 @@ function SearchStockInput({ trendingStock, guestId }: SearchStockInputProps) {
     return () => controller.abort();
   }, [state.searchTerm]);
 
-  function addTicker(stock: any) {
-    const payload = { stockId: stock.id, guestId, ticker: stock.name };
+  function addTicker(stock: Stock) {
+    const payload = { stockId: stock.stockId, guestId, ticker: stock.ticker };
     appDispatch(addStockTickerAsync(payload));
     dispatch({ type: "expand", payload: false });
   }
@@ -126,13 +125,13 @@ function SearchStockInput({ trendingStock, guestId }: SearchStockInputProps) {
             <li className="font-semibold px-2 py-1 text-md italic">Trending</li>
           )}
           {(state.showTrending ? state.trendingStock : state.stock).map(
-            (stock: any) => (
-              <li key={stock.name}>
+            (stock: Stock) => (
+              <li key={stock.ticker}>
                 <button
                   className="cursor-pointer w-full flex items-center px-2 py-1 text-xs"
                   onClick={() => addTicker(stock)}
                 >
-                  <div className="w-1/4 text-start">{stock.name}</div>
+                  <div className="w-1/4 text-start">{stock.ticker}</div>
                   <div className="w-3/4 font-normal text-start truncate">
                     {stock.description}
                   </div>

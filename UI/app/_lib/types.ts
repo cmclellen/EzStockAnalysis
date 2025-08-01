@@ -3,7 +3,13 @@ export type UserProfileInfo = {
   imageUrl?: string | null;
 };
 
-export type StockTicker = {
+export type Stock = {
+  stockId: number;
   ticker: string;
   description: string;
+};
+
+export type GuestStock = {
+  guestId: number;
+  stockId: number;
 };

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
-import { StockTicker } from "./types";
+import { Stock } from "./types";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -38,13 +38,13 @@ export async function updateGuest(formData: FormData) {
 }
 
 type GetStocksResponseData = {
-  items: StockTicker[];
+  items: Stock[];
 };
 
 export async function getTrendingStock(): Promise<GetStocksResponseData> {
   const { data: stockTickers, error } = await supabase
     .from("stock")
-    .select("*")
+    .select("*, stockId:id")
     .range(0, 3);
 
   if (error) throw new Error("Failed fetching stock tickers");
@@ -55,10 +55,11 @@ export async function getTrendingStock(): Promise<GetStocksResponseData> {
 export async function getStock(query: string): Promise<GetStocksResponseData> {
   const { data: stockTickers, error } = await supabase
     .from("stock")
-    .select("*")
-    .ilike("name", `%${query}%`);
+    .select("*, stockId:id")
+    .ilike("ticker", `%${query}%`);
 
   if (error) throw new Error("Failed fetching stock tickers");
+
   return { items: stockTickers };
 }
 
@@ -75,8 +76,20 @@ export async function addStock(
 export async function getStocksByGuestId(guestId: number): Promise<any> {
   const { data, error } = await supabase
     .from("guest-stock")
-    .select("*, stock (name)")
+    .select("*, stock (ticker, stockId:id)")
     .eq("guestId", guestId);
   if (error) throw error;
   return data;
+}
+
+export async function removeStock(
+  guestId: number,
+  stockId: number
+): Promise<void> {
+  const { error } = await supabase
+    .from("guest-stock")
+    .delete()
+    .eq("guestId", guestId)
+    .eq("stockId", stockId);
+  if (error) throw error;
 }
