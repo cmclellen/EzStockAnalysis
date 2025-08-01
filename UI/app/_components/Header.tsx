@@ -11,7 +11,7 @@ async function Header() {
   const session: Session | null = await auth();
   const trendingStock = await getTrendingStock();
 
-  const user = session?.user;
+  const user: any = session?.user;
 
   const userProfile: UserProfileInfo | null = user
     ? {
