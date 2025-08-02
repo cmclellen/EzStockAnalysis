@@ -80,12 +80,18 @@ const CustomTooltip = ({ active, payload, label }) => {
             {label}
           </p>
 
-          {/* <p className="intro">{getIntroOfPage(label)}</p> */}
-          <p className="flex items-center space-x-2 text-sm">
-            <p className="font-semibold">{payload[0].name}</p>
-            <p className="font-semibold">{payload[0].payload.original}</p>
-            <p className="text-red-400 font-semibold">({payload[0].value}%)</p>
-          </p>
+          <ul>
+            {payload.map((item: any) => (
+              <li
+                key={item.name}
+                className="flex items-center space-x-2 text-sm"
+              >
+                <p className="font-semibold">{item.name}</p>
+                <p className="font-semibold">{item.payload.original}</p>
+                <p className="text-red-400 font-semibold">({item.value}%)</p>
+              </li>
+            ))}
+          </ul>
         </>
       )}
     </div>
