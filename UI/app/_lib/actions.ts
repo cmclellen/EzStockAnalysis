@@ -5,7 +5,7 @@ import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
 import { Stock } from "./types";
 import * as myData from "./data.json";
-import { compareAsc } from "date-fns";
+import { compareAsc, format } from "date-fns";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -96,35 +96,42 @@ export async function removeStock(
   if (error) throw error;
 }
 
+const roundTo = function (num: number, places: number = 2) {
+  const factor = 10 ** places;
+  const result = Math.round(num * factor) / factor;
+  return result;
+};
+
 export async function getYearToDate(): Promise<any> {
   let data = myData.data
-    .map((i, k) => {
+    .sort((a, b) => compareAsc(a.date, b.date))
+    .map((i) => {
       const original = i.close;
-
+      const formattedDay = format(i.date, "MMM dd, yyyy");
       return {
-        name: i.date,
-        uv: original,
+        formattedDay,
+        NVO: roundTo(original),
+        original,
       };
-    })
-    .sort((a, b) => compareAsc(a.name, b.name));
+    });
 
-  const all = data.map((i) => i.uv);
+  const all = data.map((i) => i.NVO);
 
   const max = Math.max(...all);
   const min = Math.min(...all);
   const diff = max - min;
   const div = diff / min;
-  const per = div * 100;
+  const perc = div * 100;
   console.log({
     max,
     min,
     diff,
     div,
-    per,
+    perc,
   });
 
   data = data.map((i) => {
-    return { ...i, uv: (i.uv - min * 100) / (max - min) };
+    return { ...i, NVO: roundTo(((i.NVO - min) * perc) / diff) };
   });
 
   return data;

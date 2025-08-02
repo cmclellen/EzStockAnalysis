@@ -1,7 +1,7 @@
 "use client";
 
 import { removeStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
-import { getStockTickers, useAppDispatch, useAppSelector } from "@/lib/store";
+import { getStocks, useAppDispatch, useAppSelector } from "@/lib/store";
 import { FaTimes } from "react-icons/fa";
 import {
   CartesianGrid,
@@ -62,8 +62,38 @@ type StockChartProps = {
   guestId: number;
 };
 
+const audFormatter = new Intl.NumberFormat("en-AU", {
+  style: "currency",
+  currency: "AUD",
+});
+
+const CustomTooltip = ({ active, payload, label }) => {
+  const isVisible = active && payload && payload.length;
+  return (
+    <div
+      className="custom-tooltip"
+      style={{ visibility: isVisible ? "visible" : "hidden" }}
+    >
+      {isVisible && (
+        <>
+          <p className="font-semibold text-gray-500 border-b border-gray-400">
+            {label}
+          </p>
+
+          {/* <p className="intro">{getIntroOfPage(label)}</p> */}
+          <p className="flex items-center space-x-2 text-sm">
+            <p className="font-semibold">{payload[0].name}</p>
+            <p className="font-semibold">{payload[0].payload.original}</p>
+            <p className="text-red-400 font-semibold">({payload[0].value}%)</p>
+          </p>
+        </>
+      )}
+    </div>
+  );
+};
+
 function StockChart({ guestId }: StockChartProps) {
-  const stockTickers = useAppSelector(getStockTickers);
+  const stocks = useAppSelector(getStocks);
   const [serverData, setServerData] = useState([]);
 
   useEffect(() => {
@@ -81,7 +111,7 @@ function StockChart({ guestId }: StockChartProps) {
 
   return (
     <>
-      <StockPillList stocks={stockTickers} guestId={guestId} />
+      <StockPillList stocks={stocks} guestId={guestId} />
       <ResponsiveContainer width="100%" height="100%" className="" aspect={3}>
         <LineChart
           width={500}
@@ -95,17 +125,25 @@ function StockChart({ guestId }: StockChartProps) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="formattedDay" />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={CustomTooltip} />
           <Legend />
+          {stocks.map((stock) => (
+            <Line
+              key={stock.ticker}
+              type="monotone"
+              dataKey={stock.ticker}
+              stroke="#82ca9d"
+            />
+          ))}
           {/* <Line
             type="monotone"
             dataKey="pv"
             stroke="#8884d8"
             activeDot={{ r: 8 }}
           /> */}
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
         </LineChart>
       </ResponsiveContainer>
     </>
