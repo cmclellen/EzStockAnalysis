@@ -1,6 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: cupcake --default;
+}
 
 :root {
   --background: #ffffff;
@@ -16,7 +19,9 @@
   --color-surface: var(--color-gray-100);
   --color-on-surface: var(--color-gray-600);
 
+  /* 
   --color-primary: #675496;
+  */
   --color-primary-container: #c8b3fd;
   --color-on-primary-fixed: #1e0a42;
   --color-on-primary: #ffffff;

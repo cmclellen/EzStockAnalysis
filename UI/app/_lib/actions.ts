@@ -131,7 +131,12 @@ export async function getYearToDate(): Promise<any> {
   });
 
   data = data.map((i) => {
-    return { ...i, NVO: roundTo(((i.NVO - min) * perc) / diff) };
+    return { ...i, NVO: ((i.NVO - min) * perc) / diff };
+  });
+
+  const offset = data[0].NVO;
+  data = data.map((i) => {
+    return { ...i, NVO: roundTo(i.NVO - offset) };
   });
 
   return data;

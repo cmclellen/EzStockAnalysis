@@ -16,6 +16,7 @@ import {
 import { Stock } from "../_lib/types";
 import { useEffect, useState } from "react";
 import { getYearToDate } from "../_lib/actions";
+import clsx from "clsx";
 
 function StockPill({ stock, guestId }: { stock: Stock; guestId: number }) {
   const appDispatch = useAppDispatch();
@@ -62,11 +63,6 @@ type StockChartProps = {
   guestId: number;
 };
 
-const audFormatter = new Intl.NumberFormat("en-AU", {
-  style: "currency",
-  currency: "AUD",
-});
-
 const CustomTooltip = ({ active, payload, label }) => {
   const isVisible = active && payload && payload.length;
   return (
@@ -81,16 +77,26 @@ const CustomTooltip = ({ active, payload, label }) => {
           </p>
 
           <ul>
-            {payload.map((item: any) => (
-              <li
-                key={item.name}
-                className="flex items-center space-x-2 text-sm"
-              >
-                <p className="font-semibold">{item.name}</p>
-                <p className="font-semibold">{item.payload.original}</p>
-                <p className="text-red-400 font-semibold">({item.value}%)</p>
-              </li>
-            ))}
+            {payload.map((item: any) => {
+              const percentage = item.payload.original;
+              return (
+                <li
+                  key={item.name}
+                  className="flex items-center space-x-2 text-sm"
+                >
+                  <p className="font-semibold">{item.name}</p>
+                  <p className="font-semibold">{percentage}</p>
+                  <p
+                    className={clsx("font-semibold", {
+                      "text-success": item.value > 0,
+                      "text-warning": item.value <= 0,
+                    })}
+                  >
+                    ({item.value}%)
+                  </p>
+                </li>
+              );
+            })}
           </ul>
         </>
       )}
