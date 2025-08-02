@@ -5,6 +5,7 @@ import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
 import { Stock } from "./types";
 import * as myData from "./data.json";
+import { compareAsc } from "date-fns";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -96,10 +97,36 @@ export async function removeStock(
 }
 
 export async function getYearToDate(): Promise<any> {
-  const data = myData.data.map((i, k) => ({
-    name: i.date,
-    uv: i.close,
-  }));
+  let data = myData.data
+    .map((i, k) => {
+      const original = i.close;
+
+      return {
+        name: i.date,
+        uv: original,
+      };
+    })
+    .sort((a, b) => compareAsc(a.name, b.name));
+
+  const all = data.map((i) => i.uv);
+
+  const max = Math.max(...all);
+  const min = Math.min(...all);
+  const diff = max - min;
+  const div = diff / min;
+  const per = div * 100;
+  console.log({
+    max,
+    min,
+    diff,
+    div,
+    per,
+  });
+
+  data = data.map((i) => {
+    return { ...i, uv: (i.uv - min * 100) / (max - min) };
+  });
+
   return data;
 }
 
