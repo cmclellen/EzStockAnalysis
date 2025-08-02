@@ -103,13 +103,19 @@ const roundTo = function (num: number, places: number = 2) {
   return result;
 };
 
-export async function getYearToDate(): Promise<any> {
+export async function getYearToDate({
+  stockIds,
+}: {
+  stockIds: number[];
+}): Promise<any> {
   const { data: stockClosing, error } = await supabase
     .from("stock-closing")
-    .select("*")
-    .in("stockId", [8]);
+    .select("*, stock(ticker)")
+    .in("stockId", stockIds);
 
   if (error) throw error;
+
+  console.log(stockClosing.slice(0, 4));
 
   let data = stockClosing!
     .sort((a, b) => compareAsc(a.date, b.date))
@@ -118,33 +124,28 @@ export async function getYearToDate(): Promise<any> {
       const formattedDay = format(i.date, "MMM dd, yyyy");
       return {
         formattedDay,
-        NVO: roundTo(original),
+        [i.stock.ticker]: roundTo(original),
         original,
+        ticker: i.stock.ticker,
       };
     });
 
-  const all = data.map((i) => i.NVO);
+  const all = data.map((i) => i[i.ticker]);
 
   const max = Math.max(...all);
   const min = Math.min(...all);
   const diff = max - min;
   const div = diff / min;
   const perc = div * 100;
-  console.log({
-    max,
-    min,
-    diff,
-    div,
-    perc,
-  });
 
   data = data.map((i) => {
-    return { ...i, NVO: ((i.NVO - min) * perc) / diff };
+    return { ...i, [i.ticker]: ((i[i.ticker] - min) * perc) / diff };
   });
 
-  const offset = data[0].NVO;
+  const offset = data[0]["AAPL"];
+
   data = data.map((i) => {
-    return { ...i, NVO: roundTo(i.NVO - offset) };
+    return { ...i, [i.ticker]: roundTo(i[i.ticker] - offset) };
   });
 
   return data;

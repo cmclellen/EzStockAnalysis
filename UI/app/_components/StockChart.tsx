@@ -111,7 +111,7 @@ function StockChart({ guestId }: StockChartProps) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getYearToDate();
+        const data = await getYearToDate({ stockIds: [8] });
         setServerData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
