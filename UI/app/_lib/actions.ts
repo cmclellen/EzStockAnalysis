@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
 import { Stock } from "./types";
-import * as myData from "./data.json";
 import { compareAsc, format } from "date-fns";
+
+const ticker = 1;
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -103,10 +104,17 @@ const roundTo = function (num: number, places: number = 2) {
 };
 
 export async function getYearToDate(): Promise<any> {
-  let data = myData.data
+  const { data: stockClosing, error } = await supabase
+    .from("stock-closing")
+    .select("*")
+    .in("stockId", [8]);
+
+  if (error) throw error;
+
+  let data = stockClosing!
     .sort((a, b) => compareAsc(a.date, b.date))
     .map((i) => {
-      const original = i.close;
+      const original = i.closing;
       const formattedDay = format(i.date, "MMM dd, yyyy");
       return {
         formattedDay,
