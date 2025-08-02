@@ -2,6 +2,8 @@
 
 import { removeStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
 import { getStocks, useAppDispatch, useAppSelector } from "@/lib/store";
+import clsx from "clsx";
+import { useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import {
   CartesianGrid,
@@ -13,10 +15,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Stock } from "../_lib/types";
-import { useEffect, useState } from "react";
 import { getYearToDate } from "../_lib/actions";
-import clsx from "clsx";
+import { Stock } from "../_lib/types";
 
 function StockPill({ stock, guestId }: { stock: Stock; guestId: number }) {
   const appDispatch = useAppDispatch();
@@ -146,7 +146,7 @@ function StockChart({ guestId }: StockChartProps) {
               key={stock.ticker}
               type="monotone"
               dataKey={stock.ticker}
-              stroke="#82ca9d"
+              stroke={`#${stock.color}`}
             />
           ))}
           {/* <Line

@@ -3,7 +3,8 @@ create table public.stock (
   created_at timestamp with time zone not null default now(),
   ticker text null,
   description text null,
+  color text null,
   constraint stock - ticker_pkey primary key (id)
 ) TABLESPACE pg_default;
 
-INSERT INTO "public"."stock" ("id", "created_at", "ticker", "description") VALUES ('1', '2025-07-29 23:14:29.943196+00', 'UNH', 'UnitedHealth Group Incorporated'), ('2', '2025-07-29 23:14:47.703704+00', 'NVDA', 'NVIDIA Corporation'), ('3', '2025-07-29 23:15:07.599649+00', 'NVO', 'NOVO Nordisk A/S'), ('4', '2025-07-29 23:15:29.953127+00', 'AMD', 'Advanced Micro Devices, Inc.'), ('5', '2025-07-29 23:15:45.586501+00', 'TSLA', 'Tesla, Inc.'), ('6', '2025-07-29 23:16:05.458804+00', 'SOFI', 'SoFi Technologies, Inc.'), ('7', '2025-07-29 23:27:54.047888+00', 'GOOG', 'Alphabet Inc.'), ('8', '2025-08-02 21:49:29.68474+00', 'AAPL', 'Apple Inc');
+INSERT INTO "public"."stock" ("id", "created_at", "ticker", "description", "color") VALUES ('1', '2025-07-29 23:14:29.943196+00', 'UNH', 'UnitedHealth Group Incorporated', 'ff60a8'), ('2', '2025-07-29 23:14:47.703704+00', 'NVDA', 'NVIDIA Corporation', '6c88c4'), ('3', '2025-07-29 23:15:07.599649+00', 'NVO', 'NOVO Nordisk A/S', '82b2c0'), ('4', '2025-07-29 23:15:29.953127+00', 'AMD', 'Advanced Micro Devices, Inc.', 'c3dedd'), ('5', '2025-07-29 23:15:45.586501+00', 'TSLA', 'Tesla, Inc.', 'f6c7b3'), ('6', '2025-07-29 23:16:05.458804+00', 'SOFI', 'SoFi Technologies, Inc.', 'f0e2c3'), ('7', '2025-07-29 23:27:54.047888+00', 'GOOG', 'Alphabet Inc.', 'f2eae0'), ('8', '2025-08-02 21:49:29.68474+00', 'AAPL', 'Apple Inc', 'DCECE9');

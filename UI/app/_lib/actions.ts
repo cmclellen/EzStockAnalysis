@@ -79,7 +79,7 @@ export async function addStock(
 export async function getStocksByGuestId(guestId: number): Promise<any> {
   const { data, error } = await supabase
     .from("guest-stock")
-    .select("*, stock (ticker, stockId:id)")
+    .select("*, stock (ticker, stockId:id, color)")
     .eq("guestId", guestId);
   if (error) throw error;
   return data;

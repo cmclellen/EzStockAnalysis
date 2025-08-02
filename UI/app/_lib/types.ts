@@ -7,6 +7,7 @@ export type Stock = {
   stockId: number;
   ticker: string;
   description: string;
+  color: string;
 };
 
 export type GuestStock = {
