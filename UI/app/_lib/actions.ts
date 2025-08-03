@@ -1,11 +1,10 @@
 "use server";
 
+import { compareAsc, format } from "date-fns";
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
 import { Stock } from "./types";
-import * as myData from "./data.json";
-import { compareAsc } from "date-fns";
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -78,7 +77,7 @@ export async function addStock(
 export async function getStocksByGuestId(guestId: number): Promise<any> {
   const { data, error } = await supabase
     .from("guest-stock")
-    .select("*, stock (ticker, stockId:id)")
+    .select("*, stock (ticker, stockId:id, color)")
     .eq("guestId", guestId);
   if (error) throw error;
   return data;
@@ -96,81 +95,70 @@ export async function removeStock(
   if (error) throw error;
 }
 
-export async function getYearToDate(): Promise<any> {
-  let data = myData.data
-    .map((i, k) => {
-      const original = i.close;
+const roundTo = function (num: number, places: number = 2) {
+  const factor = 10 ** places;
+  const result = Math.round(num * factor) / factor;
+  return result;
+};
 
-      return {
-        name: i.date,
-        uv: original,
-      };
-    })
-    .sort((a, b) => compareAsc(a.name, b.name));
+function addTickerDetail(o: any, i: any) {
+  const original = i.closing;
+  o[i.stock.ticker] = roundTo(original);
+  o[i.stock.ticker + "-detail"] = {
+    original,
+    ticker: i.stock.ticker,
+  };
+  return o;
+}
 
-  const all = data.map((i) => i.uv);
+export async function getYearToDate({
+  stockIds,
+}: {
+  stockIds: number[];
+}): Promise<any> {
+  console.log(stockIds);
+  const { data: stockClosing, error } = await supabase
+    .from("stock-closing")
+    .select("*, stock(ticker)")
+    .in("stockId", stockIds);
 
-  const max = Math.max(...all);
-  const min = Math.min(...all);
-  const diff = max - min;
-  const div = diff / min;
-  const per = div * 100;
-  console.log({
-    max,
-    min,
-    diff,
-    div,
-    per,
-  });
+  if (error) throw error;
 
-  data = data.map((i) => {
-    return { ...i, uv: (i.uv - min * 100) / (max - min) };
+  const tickers = [...new Set(stockClosing.map((i) => i.stock.ticker))];
+
+  let data = stockClosing!
+    .sort((a, b) => compareAsc(a.date, b.date))
+    .reduce((acc, i) => {
+      const formattedDay = format(i.date, "MMM dd, yyyy");
+      let item = acc.find((i: any) => i.formattedDay == formattedDay);
+      if (item) {
+        item = addTickerDetail(item, i);
+      } else {
+        item = addTickerDetail({ formattedDay }, i);
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+
+  tickers.forEach((ticker: string) => {
+    const all = data.map((i: any) => i[ticker] ?? 0);
+
+    const max = Math.max(...all);
+    const min = Math.min(...all);
+    const diff = max - min;
+    const div = diff / min;
+    const perc = div * 100;
+
+    data = data.map((i: any) => {
+      return { ...i, [ticker]: ((i[ticker] - min) * perc) / diff };
+    });
+
+    const offset = data[0][ticker];
+
+    data = data.map((i: any) => {
+      return { ...i, [ticker]: roundTo(i[ticker] - offset) };
+    });
   });
 
   return data;
 }
-
-// const data = [
-//   {
-//     name: "Page A",
-//     uv: 4000,
-//     pv: 2400,
-//     amt: 2400,
-//   },
-//   {
-//     name: "Page B",
-//     uv: 3000,
-//     pv: 1398,
-//     amt: 2210,
-//   },
-//   {
-//     name: "Page C",
-//     uv: 2000,
-//     pv: 9800,
-//     amt: 2290,
-//   },
-//   {
-//     name: "Page D",
-//     uv: 2780,
-//     pv: 3908,
-//     amt: 2000,
-//   },
-//   {
-//     name: "Page E",
-//     uv: 1890,
-//     pv: 4800,
-//     amt: 2181,
-//   },
-//   {
-//     name: "Page F",
-//     uv: 2390,
-//     pv: 3800,
-//     amt: 2500,
-//   },
-//   {
-//     name: "Page G",
-//     uv: 3490,
-//     pv: 4300,
-//     amt: 2100,
-//   },
-// ];

@@ -1,7 +1,9 @@
 "use client";
 
 import { removeStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
-import { getStockTickers, useAppDispatch, useAppSelector } from "@/lib/store";
+import { getStocks, useAppDispatch, useAppSelector } from "@/lib/store";
+import clsx from "clsx";
+import { ReactNode, useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import {
   CartesianGrid,
@@ -10,12 +12,16 @@ import {
   LineChart,
   ResponsiveContainer,
   Tooltip,
+  TooltipContentProps,
   XAxis,
   YAxis,
 } from "recharts";
-import { Stock } from "../_lib/types";
-import { useEffect, useState } from "react";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { getYearToDate } from "../_lib/actions";
+import { Stock } from "../_lib/types";
 
 function StockPill({ stock, guestId }: { stock: Stock; guestId: number }) {
   const appDispatch = useAppDispatch();
@@ -62,14 +68,62 @@ type StockChartProps = {
   guestId: number;
 };
 
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipContentProps<ValueType, NameType>): ReactNode => {
+  const isVisible = active && payload && payload.length;
+
+  return (
+    <div
+      className="custom-tooltip bg-white p-2 rounded-xl shadow-xl"
+      style={{ visibility: isVisible ? "visible" : "hidden" }}
+    >
+      {isVisible && (
+        <>
+          <p className="font-semibold text-gray-500 border-b border-gray-400">
+            {label}
+          </p>
+
+          <ul>
+            {payload.map((item: any) => {
+              console.log("item.payload", item.payload);
+              const percentage = item.payload.original;
+              return (
+                <li
+                  key={item.name}
+                  className="flex items-center space-x-2 text-sm"
+                >
+                  <p className="font-semibold">{item.name}</p>
+                  <p className="font-semibold">{percentage}</p>
+                  <p
+                    className={clsx("font-semibold", {
+                      "text-success": item.value > 0,
+                      "text-warning": item.value <= 0,
+                    })}
+                  >
+                    ({item.value}%)
+                  </p>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+};
+
 function StockChart({ guestId }: StockChartProps) {
-  const stockTickers = useAppSelector(getStockTickers);
+  const stocks = useAppSelector(getStocks);
   const [serverData, setServerData] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getYearToDate();
+        const stockIds = stocks.map((stock) => stock.stockId);
+        const data = await getYearToDate({ stockIds });
         setServerData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -77,11 +131,11 @@ function StockChart({ guestId }: StockChartProps) {
     };
 
     loadData();
-  }, []);
+  }, [stocks]);
 
   return (
     <>
-      <StockPillList stocks={stockTickers} guestId={guestId} />
+      <StockPillList stocks={stocks} guestId={guestId} />
       <ResponsiveContainer width="100%" height="100%" className="" aspect={3}>
         <LineChart
           width={500}
@@ -95,17 +149,18 @@ function StockChart({ guestId }: StockChartProps) {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
+          <XAxis dataKey="formattedDay" />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={CustomTooltip} />
           <Legend />
-          {/* <Line
-            type="monotone"
-            dataKey="pv"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          /> */}
-          <Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+          {stocks.map((stock) => (
+            <Line
+              key={stock.ticker}
+              type="monotone"
+              dataKey={stock.ticker}
+              stroke={`#${stock.color}`}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </>
