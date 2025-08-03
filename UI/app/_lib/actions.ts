@@ -1,12 +1,10 @@
 "use server";
 
+import { compareAsc, format } from "date-fns";
 import { revalidatePath } from "next/cache";
 import { auth, signIn, signOut } from "./auth";
 import supabase from "./supabase";
 import { Stock } from "./types";
-import { compareAsc, format } from "date-fns";
-
-const ticker = 1;
 
 export async function signInAction() {
   await signIn("google", { redirectTo: "/dashboard" });
@@ -132,7 +130,7 @@ export async function getYearToDate({
     .sort((a, b) => compareAsc(a.date, b.date))
     .reduce((acc, i) => {
       const formattedDay = format(i.date, "MMM dd, yyyy");
-      let item = acc.find((i) => i.formattedDay == formattedDay);
+      let item = acc.find((i: any) => i.formattedDay == formattedDay);
       if (item) {
         item = addTickerDetail(item, i);
       } else {
@@ -142,8 +140,8 @@ export async function getYearToDate({
       return acc;
     }, []);
 
-  tickers.forEach((ticker) => {
-    const all = data.map((i) => i[ticker] ?? 0);
+  tickers.forEach((ticker: string) => {
+    const all = data.map((i: any) => i[ticker] ?? 0);
 
     const max = Math.max(...all);
     const min = Math.min(...all);
@@ -151,13 +149,13 @@ export async function getYearToDate({
     const div = diff / min;
     const perc = div * 100;
 
-    data = data.map((i) => {
+    data = data.map((i: any) => {
       return { ...i, [ticker]: ((i[ticker] - min) * perc) / diff };
     });
 
     const offset = data[0][ticker];
 
-    data = data.map((i) => {
+    data = data.map((i: any) => {
       return { ...i, [ticker]: roundTo(i[ticker] - offset) };
     });
   });

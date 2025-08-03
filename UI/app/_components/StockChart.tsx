@@ -3,7 +3,7 @@
 import { removeStockTickerAsync } from "@/lib/features/stocks/stocksSlice";
 import { getStocks, useAppDispatch, useAppSelector } from "@/lib/store";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import {
   CartesianGrid,
@@ -12,9 +12,14 @@ import {
   LineChart,
   ResponsiveContainer,
   Tooltip,
+  TooltipContentProps,
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import { getYearToDate } from "../_lib/actions";
 import { Stock } from "../_lib/types";
 
@@ -63,10 +68,12 @@ type StockChartProps = {
   guestId: number;
 };
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+}: TooltipContentProps<ValueType, NameType>): ReactNode => {
   const isVisible = active && payload && payload.length;
-
-  console.log(payload);
 
   return (
     <div
