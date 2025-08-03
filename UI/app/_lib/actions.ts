@@ -103,11 +103,22 @@ const roundTo = function (num: number, places: number = 2) {
   return result;
 };
 
+function addTickerDetail(o: any, i: any) {
+  const original = i.closing;
+  o[i.stock.ticker] = roundTo(original);
+  o[i.stock.ticker + "-detail"] = {
+    original,
+    ticker: i.stock.ticker,
+  };
+  return o;
+}
+
 export async function getYearToDate({
   stockIds,
 }: {
   stockIds: number[];
 }): Promise<any> {
+  console.log(stockIds);
   const { data: stockClosing, error } = await supabase
     .from("stock-closing")
     .select("*, stock(ticker)")
@@ -115,83 +126,41 @@ export async function getYearToDate({
 
   if (error) throw error;
 
-  console.log(stockClosing.slice(0, 4));
+  const tickers = [...new Set(stockClosing.map((i) => i.stock.ticker))];
 
   let data = stockClosing!
     .sort((a, b) => compareAsc(a.date, b.date))
-    .map((i) => {
-      const original = i.closing;
+    .reduce((acc, i) => {
       const formattedDay = format(i.date, "MMM dd, yyyy");
-      return {
-        formattedDay,
-        [i.stock.ticker]: roundTo(original),
-        original,
-        ticker: i.stock.ticker,
-      };
+      let item = acc.find((i) => i.formattedDay == formattedDay);
+      if (item) {
+        item = addTickerDetail(item, i);
+      } else {
+        item = addTickerDetail({ formattedDay }, i);
+        acc.push(item);
+      }
+      return acc;
+    }, []);
+
+  tickers.forEach((ticker) => {
+    const all = data.map((i) => i[ticker] ?? 0);
+
+    const max = Math.max(...all);
+    const min = Math.min(...all);
+    const diff = max - min;
+    const div = diff / min;
+    const perc = div * 100;
+
+    data = data.map((i) => {
+      return { ...i, [ticker]: ((i[ticker] - min) * perc) / diff };
     });
 
-  const all = data.map((i) => i[i.ticker]);
+    const offset = data[0][ticker];
 
-  const max = Math.max(...all);
-  const min = Math.min(...all);
-  const diff = max - min;
-  const div = diff / min;
-  const perc = div * 100;
-
-  data = data.map((i) => {
-    return { ...i, [i.ticker]: ((i[i.ticker] - min) * perc) / diff };
-  });
-
-  const offset = data[0]["AAPL"];
-
-  data = data.map((i) => {
-    return { ...i, [i.ticker]: roundTo(i[i.ticker] - offset) };
+    data = data.map((i) => {
+      return { ...i, [ticker]: roundTo(i[ticker] - offset) };
+    });
   });
 
   return data;
 }
-
-// const data = [
-//   {
-//     name: "Page A",
-//     uv: 4000,
-//     pv: 2400,
-//     amt: 2400,
-//   },
-//   {
-//     name: "Page B",
-//     uv: 3000,
-//     pv: 1398,
-//     amt: 2210,
-//   },
-//   {
-//     name: "Page C",
-//     uv: 2000,
-//     pv: 9800,
-//     amt: 2290,
-//   },
-//   {
-//     name: "Page D",
-//     uv: 2780,
-//     pv: 3908,
-//     amt: 2000,
-//   },
-//   {
-//     name: "Page E",
-//     uv: 1890,
-//     pv: 4800,
-//     amt: 2181,
-//   },
-//   {
-//     name: "Page F",
-//     uv: 2390,
-//     pv: 3800,
-//     amt: 2500,
-//   },
-//   {
-//     name: "Page G",
-//     uv: 3490,
-//     pv: 4300,
-//     amt: 2100,
-//   },
-// ];

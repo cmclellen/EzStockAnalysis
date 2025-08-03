@@ -65,9 +65,12 @@ type StockChartProps = {
 
 const CustomTooltip = ({ active, payload, label }) => {
   const isVisible = active && payload && payload.length;
+
+  console.log(payload);
+
   return (
     <div
-      className="custom-tooltip"
+      className="custom-tooltip bg-white p-2 rounded-xl shadow-xl"
       style={{ visibility: isVisible ? "visible" : "hidden" }}
     >
       {isVisible && (
@@ -78,6 +81,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
           <ul>
             {payload.map((item: any) => {
+              console.log("item.payload", item.payload);
               const percentage = item.payload.original;
               return (
                 <li
@@ -111,7 +115,8 @@ function StockChart({ guestId }: StockChartProps) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await getYearToDate({ stockIds: [8] });
+        const stockIds = stocks.map((stock) => stock.stockId);
+        const data = await getYearToDate({ stockIds });
         setServerData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -119,7 +124,7 @@ function StockChart({ guestId }: StockChartProps) {
     };
 
     loadData();
-  }, []);
+  }, [stocks]);
 
   return (
     <>
@@ -149,13 +154,6 @@ function StockChart({ guestId }: StockChartProps) {
               stroke={`#${stock.color}`}
             />
           ))}
-          {/* <Line
-            type="monotone"
-            dataKey="pv"
-            stroke="#8884d8"
-            activeDot={{ r: 8 }}
-          /> */}
-          {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
         </LineChart>
       </ResponsiveContainer>
     </>
